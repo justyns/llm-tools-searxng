@@ -1,4 +1,5 @@
 import llm
+import httpx
 
 
 def searxng(input: str) -> str:

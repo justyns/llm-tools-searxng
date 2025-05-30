@@ -40,8 +40,7 @@ result = model.chain(
 To set up this plugin locally, first checkout the code. Then create a new virtual environment:
 ```bash
 cd llm-tools-searxng
-python -m venv venv
-source venv/bin/activate
+uv sync --all-extras
 ```
 Now install the dependencies and test dependencies:
 ```bash
@@ -49,5 +48,5 @@ llm install -e '.[test]'
 ```
 To run the tests:
 ```bash
-python -m pytest
+uv run python -m pytest
 ```
