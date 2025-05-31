@@ -20,7 +20,7 @@ By default, the tool does not have a default SEARXNG_URL set, you must set this 
 
 ```bash
 export SEARXNG_URL=https://your-searxng-instance.com
-export SEARXNG_METHOD=POST  # or GET (default)
+export SEARXNG_METHOD=GET  # or POST (default)
 ```
 
 **Note:** Public SearXNG instances typically don't allow API access or JSON output.

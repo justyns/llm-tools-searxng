@@ -6,9 +6,10 @@ from llm_tools_searxng import SearXNG, searxng_search
 
 
 def test_searxng_search_function_get(httpx_mock, monkeypatch):
-    """Test the simple searxng_search function with GET method (default)"""
-    # Set required environment variable
+    """Test the simple searxng_search function with GET method"""
+    # Set required environment variable and explicitly set GET method
     monkeypatch.setenv("SEARXNG_URL", "https://searx.be")
+    monkeypatch.setenv("SEARXNG_METHOD", "GET")
     
     # Mock the HTTP response
     mock_response = {
@@ -93,10 +94,11 @@ def test_searxng_search_function_post(httpx_mock, monkeypatch):
     assert output["results"][0]["title"] == "Test Result POST"
 
 
-def test_searxng_class_direct_get(httpx_mock):
+def test_searxng_class_direct_get(httpx_mock, monkeypatch):
     """Test the SearXNG class directly with GET method"""
-def test_searxng_class_direct_get(httpx_mock):
-    """Test the SearXNG class directly with GET method"""
+    # Explicitly set GET method
+    monkeypatch.setenv("SEARXNG_METHOD", "GET")
+    
     mock_response = {
         "query": "python",
         "results": [
@@ -122,6 +124,32 @@ def test_searxng_class_direct_get(httpx_mock):
     assert output["query"] == "python"
     assert len(output["results"]) == 1
     assert output["results"][0]["url"] == "https://python.org"
+
+
+def test_searxng_class_direct_post_default(httpx_mock):
+    """Test the SearXNG class directly with POST method (default)"""
+    mock_response = {
+        "query": "python",
+        "results": [
+            {
+                "title": "Python.org",
+                "url": "https://python.org",
+                "content": "The official Python website",
+                "engine": "google"
+            }
+        ]
+    }
+    httpx_mock.add_response(
+        url="https://custom.searxng.com/search",
+        json=mock_response,
+        method="POST"
+    )
+    
+    # Test the SearXNG class directly without setting method (should default to POST)
+    searxng = SearXNG("https://custom.searxng.com")
+    result = searxng.search("python")
+    
+    output = json.loads(result)
     assert output["query"] == "python"
     assert len(output["results"]) == 1
     assert output["results"][0]["url"] == "https://python.org"

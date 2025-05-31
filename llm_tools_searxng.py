@@ -11,7 +11,7 @@ class SearXNG:
         self.base_url = base_url or os.getenv("SEARXNG_URL")
         if not self.base_url:
             raise ValueError("SEARXNG_URL environment variable is required")
-        self.method = os.getenv("SEARXNG_METHOD", "GET").upper()
+        self.method = os.getenv("SEARXNG_METHOD", "POST").upper()
     
     def search(self, query: str, format: str = "json", categories: str = None, 
                engines: str = None, language: str = "en", pageno: int = 1, 
