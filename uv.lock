@@ -282,29 +282,29 @@ dependencies = [
     { name = "llm" },
 ]
 
-[package.optional-dependencies]
+[package.dev-dependencies]
+dev = [
+    { name = "ruff" },
+]
 test = [
     { name = "llm-echo" },
     { name = "pytest" },
     { name = "pytest-httpx" },
 ]
 
-[package.dev-dependencies]
-dev = [
-    { name = "ruff" },
-]
-
 [package.metadata]
 requires-dist = [
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "llm", specifier = ">=0.26" },
-    { name = "llm-echo", marker = "extra == 'test'", specifier = ">=0.3a1" },
-    { name = "pytest", marker = "extra == 'test'" },
-    { name = "pytest-httpx", marker = "extra == 'test'" },
 ]
 
 [package.metadata.requires-dev]
 dev = [{ name = "ruff", specifier = ">=0.11.12" }]
+test = [
+    { name = "llm-echo", specifier = ">=0.3a1" },
+    { name = "pytest" },
+    { name = "pytest-httpx" },
+]
 
 [[package]]
 name = "openai"
