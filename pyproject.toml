@@ -18,8 +18,7 @@ build-backend = "setuptools.build_meta"
 
 [dependency-groups]
 dev = [
-    "black>=25.1.0",
-    "isort>=6.0.1",
+    "ruff>=0.11.12",
 ]
 
 [project.urls]
@@ -33,3 +32,16 @@ llm_tools_searxng = "llm_tools_searxng"
 
 [project.optional-dependencies]
 test = ["pytest", "llm-echo>=0.3a1", "pytest-httpx"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py39"
+
+[tool.ruff.lint]
+ignore = []
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"

@@ -59,9 +59,7 @@ class SearXNG:
             # TODO: Set user agent?
             headers = None
 
-            with httpx.Client(
-                follow_redirects=True, timeout=30.0, headers=headers
-            ) as client:
+            with httpx.Client(follow_redirects=True, timeout=30.0, headers=headers) as client:
                 if self.method == "POST":
                     response = client.post(search_url, data=params)
                 else:

@@ -1,8 +1,6 @@
 import json
-import os
 
 import llm
-import pytest
 
 from llm_tools_searxng import SearXNG, searxng_search
 
@@ -33,13 +31,7 @@ def test_searxng_search_function_get(httpx_mock, monkeypatch):
 
     model = llm.get_model("echo")
     chain_response = model.chain(
-        json.dumps(
-            {
-                "tool_calls": [
-                    {"name": "searxng_search", "arguments": {"query": "test query"}}
-                ]
-            }
-        ),
+        json.dumps({"tool_calls": [{"name": "searxng_search", "arguments": {"query": "test query"}}]}),
         tools=[searxng_search],
     )
     responses = list(chain_response.responses())
@@ -69,19 +61,11 @@ def test_searxng_search_function_post(httpx_mock, monkeypatch):
             }
         ],
     }
-    httpx_mock.add_response(
-        url="https://searx.be/search", json=mock_response, method="POST"
-    )
+    httpx_mock.add_response(url="https://searx.be/search", json=mock_response, method="POST")
 
     model = llm.get_model("echo")
     chain_response = model.chain(
-        json.dumps(
-            {
-                "tool_calls": [
-                    {"name": "searxng_search", "arguments": {"query": "test query"}}
-                ]
-            }
-        ),
+        json.dumps({"tool_calls": [{"name": "searxng_search", "arguments": {"query": "test query"}}]}),
         tools=[searxng_search],
     )
     responses = list(chain_response.responses())
@@ -139,9 +123,7 @@ def test_searxng_class_direct_post_default(httpx_mock):
             }
         ],
     }
-    httpx_mock.add_response(
-        url="https://custom.searxng.com/search", json=mock_response, method="POST"
-    )
+    httpx_mock.add_response(url="https://custom.searxng.com/search", json=mock_response, method="POST")
 
     # Test the SearXNG class directly without setting method (should default to POST)
     searxng = SearXNG("https://custom.searxng.com")
