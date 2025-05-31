@@ -16,6 +16,12 @@ dependencies = [
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
+[dependency-groups]
+dev = [
+    "black>=25.1.0",
+    "isort>=6.0.1",
+]
+
 [project.urls]
 Homepage = "https://github.com/justyns/llm-tools-searxng"
 Changelog = "https://github.com/justyns/llm-tools-searxng/releases"
