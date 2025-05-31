@@ -1,0 +1,47 @@
+[project]
+name = "llm-tools-searxng"
+version = "0.1"
+description = "A tool to search the web using SearXNG."
+readme = "README.md"
+authors = [{name = "Justyn Shull"}]
+license = "Apache-2.0"
+classifiers = []
+requires-python = ">=3.9"
+dependencies = [
+    "httpx>=0.28.1",
+    "llm>=0.26",
+]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.11.12",
+]
+
+[project.urls]
+Homepage = "https://github.com/justyns/llm-tools-searxng"
+Changelog = "https://github.com/justyns/llm-tools-searxng/releases"
+Issues = "https://github.com/justyns/llm-tools-searxng/issues"
+CI = "https://github.com/justyns/llm-tools-searxng/actions"
+
+[project.entry-points.llm]
+llm_tools_searxng = "llm_tools_searxng"
+
+[project.optional-dependencies]
+test = ["pytest", "llm-echo>=0.3a1", "pytest-httpx"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py39"
+
+[tool.ruff.lint]
+ignore = []
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
