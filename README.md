@@ -1,6 +1,6 @@
 # llm-tools-searxng
 
-[PyPI](https://img.shields.io/pypi/v/llm-tools-searxng.svg)](https://pypi.org/project/llm-tools-searxng/)
+[![PyPI](https://img.shields.io/pypi/v/llm-tools-searxng.svg)](https://pypi.org/project/llm-tools-searxng/)
 [![Changelog](https://img.shields.io/github/v/release/justyns/llm-tools-searxng?include_prereleases&label=changelog)](https://github.com/justyns/llm-tools-searxng/releases)
 [![Tests](https://github.com/justyns/llm-tools-searxng/actions/workflows/test.yml/badge.svg)](https://github.com/justyns/llm-tools-searxng/actions/workflows/test.yml)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/justyns/llm-tools-searxng/blob/main/LICENSE)
