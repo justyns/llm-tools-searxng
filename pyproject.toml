@@ -26,4 +26,4 @@ CI = "https://github.com/justyns/llm-tools-searxng/actions"
 llm_tools_searxng = "llm_tools_searxng"
 
 [project.optional-dependencies]
-test = ["pytest", "llm-echo>=0.3a1"]
+test = ["pytest", "llm-echo>=0.3a1", "pytest-httpx"]
