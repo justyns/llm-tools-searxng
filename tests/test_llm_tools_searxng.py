@@ -1,18 +1,17 @@
 import json
+from unittest.mock import Mock, patch
 
+import pytest
 import llm
 
 from llm_tools_searxng import SearXNG, searxng_search
 
 
-def test_searxng_search_function_get(httpx_mock, monkeypatch):
-    """Test the simple searxng_search function with GET method"""
-    # Set required environment variable and explicitly set GET method
-    monkeypatch.setenv("SEARXNG_URL", "https://searx.be")
-    monkeypatch.setenv("SEARXNG_METHOD", "GET")
-
-    # Mock the HTTP response
-    mock_response = {
+@pytest.fixture
+def mock_searxng_instance():
+    """Mock SearXNG instance with predefined response"""
+    instance = Mock()
+    instance.search.return_value = json.dumps({
         "query": "test query",
         "results": [
             {
@@ -22,68 +21,20 @@ def test_searxng_search_function_get(httpx_mock, monkeypatch):
                 "engine": "duckduckgo",
             }
         ],
-    }
-    httpx_mock.add_response(
-        url="https://searx.be/search?q=test+query&format=json&language=en&pageno=1&safesearch=1",
-        json=mock_response,
-        method="GET",
-    )
-
-    model = llm.get_model("echo")
-    chain_response = model.chain(
-        json.dumps({"tool_calls": [{"name": "searxng_search", "arguments": {"query": "test query"}}]}),
-        tools=[searxng_search],
-    )
-    responses = list(chain_response.responses())
-    tool_results = json.loads(responses[-1].text())["tool_results"]
-
-    # The output should be a JSON string containing the formatted results
-    output = json.loads(tool_results[0]["output"])
-    assert output["query"] == "test query"
-    assert len(output["results"]) == 1
-    assert output["results"][0]["title"] == "Test Result"
+    })
+    return instance
 
 
-def test_searxng_search_function_post(httpx_mock, monkeypatch):
-    """Test the searxng_search function with POST method"""
-    # Set required environment variable and POST method
-    monkeypatch.setenv("SEARXNG_URL", "https://searx.be")
-    monkeypatch.setenv("SEARXNG_METHOD", "POST")
-
-    mock_response = {
-        "query": "test query",
-        "results": [
-            {
-                "title": "Test Result POST",
-                "url": "https://example.com",
-                "content": "This is a test result via POST",
-                "engine": "duckduckgo",
-            }
-        ],
-    }
-    httpx_mock.add_response(url="https://searx.be/search", json=mock_response, method="POST")
-
-    model = llm.get_model("echo")
-    chain_response = model.chain(
-        json.dumps({"tool_calls": [{"name": "searxng_search", "arguments": {"query": "test query"}}]}),
-        tools=[searxng_search],
-    )
-    responses = list(chain_response.responses())
-    tool_results = json.loads(responses[-1].text())["tool_results"]
-
-    # The output should be a JSON string containing the formatted results
-    output = json.loads(tool_results[0]["output"])
-    assert output["query"] == "test query"
-    assert len(output["results"]) == 1
-    assert output["results"][0]["title"] == "Test Result POST"
+@pytest.fixture
+def tool_call_payload():
+    """Tool call payload for llm.chain"""
+    return json.dumps({"tool_calls": [{"name": "searxng_search", "arguments": {"query": "test query"}}]})
 
 
-def test_searxng_class_direct_get(httpx_mock, monkeypatch):
-    """Test the SearXNG class directly with GET method"""
-    # Explicitly set GET method
-    monkeypatch.setenv("SEARXNG_METHOD", "GET")
-
-    mock_response = {
+@pytest.fixture
+def python_search_response():
+    """Response for direct class tests with Python query"""
+    return {
         "query": "python",
         "results": [
             {
@@ -94,42 +45,104 @@ def test_searxng_class_direct_get(httpx_mock, monkeypatch):
             }
         ],
     }
-    httpx_mock.add_response(
-        url="https://custom.searxng.com/search?q=python&format=json&language=en&pageno=1&safesearch=1",
-        json=mock_response,
-        method="GET",
-    )
-
-    # Test the SearXNG class directly
-    searxng = SearXNG("https://custom.searxng.com")
-    result = searxng.search("python")
-
-    output = json.loads(result)
-    assert output["query"] == "python"
-    assert len(output["results"]) == 1
-    assert output["results"][0]["url"] == "https://python.org"
 
 
-def test_searxng_class_direct_post_default(httpx_mock):
-    """Test the SearXNG class directly with POST method (default)"""
-    mock_response = {
-        "query": "python",
-        "results": [
-            {
-                "title": "Python.org",
-                "url": "https://python.org",
-                "content": "The official Python website",
-                "engine": "google",
-            }
-        ],
-    }
-    httpx_mock.add_response(url="https://custom.searxng.com/search", json=mock_response, method="POST")
+class TestSearxngSearchFunction:
+    """Tests for the searxng_search function"""
 
-    # Test the SearXNG class directly without setting method (should default to POST)
-    searxng = SearXNG("https://custom.searxng.com")
-    result = searxng.search("python")
+    @patch("llm_tools_searxng.SearXNG")
+    def test_direct_call(self, mock_searxng_class, mock_searxng_instance):
+        """Test searxng_search function by calling it directly"""
+        # Setup mock
+        mock_searxng_class.return_value = mock_searxng_instance
 
-    output = json.loads(result)
-    assert output["query"] == "python"
-    assert len(output["results"]) == 1
-    assert output["results"][0]["url"] == "https://python.org"
+        # Call function directly
+        result = searxng_search({"query": "test query"})
+
+        # Verify mock was called correctly
+        mock_searxng_class.assert_called_once()
+        mock_searxng_instance.search.assert_called_once_with({"query": "test query"})
+
+        # Verify result
+        result_data = json.loads(result)
+        assert result_data["query"] == "test query"
+        assert len(result_data["results"]) == 1
+        assert result_data["results"][0]["title"] == "Test Result"
+
+    @patch("llm_tools_searxng.SearXNG")
+    def test_via_chain(self, mock_searxng_class, mock_searxng_instance, tool_call_payload):
+        """Test searxng_search function through llm.chain"""
+        # Setup mock
+        mock_searxng_class.return_value = mock_searxng_instance
+
+        # Call through llm.chain
+        model = llm.get_model("echo")
+        chain_response = model.chain(
+            tool_call_payload,
+            tools=[searxng_search],
+        )
+
+        # Verify results
+        responses = list(chain_response.responses())
+        tool_results = json.loads(responses[-1].text())["tool_results"]
+        output = json.loads(tool_results[0]["output"])
+
+        assert output["query"] == "test query"
+        assert len(output["results"]) == 1
+        assert output["results"][0]["title"] == "Test Result"
+
+
+class TestSearxngClassDirect:
+    """Tests for the SearXNG class directly"""
+
+    def test_get_method(self, httpx_mock, monkeypatch, python_search_response):
+        """Test SearXNG class directly with GET method"""
+        monkeypatch.setenv("SEARXNG_METHOD", "GET")
+
+        httpx_mock.add_response(
+            url="https://custom.searxng.com/search?q=python&format=json&language=en&pageno=1&safesearch=1",
+            json=python_search_response,
+            method="GET",
+        )
+
+        searxng = SearXNG("https://custom.searxng.com")
+        result = searxng.search("python")
+
+        output = json.loads(result)
+        assert output["query"] == "python"
+        assert len(output["results"]) == 1
+        assert output["results"][0]["url"] == "https://python.org"
+
+    def test_post_method_default(self, httpx_mock, python_search_response):
+        """Test SearXNG class directly with POST method (default)"""
+        httpx_mock.add_response(
+            url="https://custom.searxng.com/search",
+            json=python_search_response,
+            method="POST",
+        )
+
+        searxng = SearXNG("https://custom.searxng.com")
+        result = searxng.search("python")
+
+        output = json.loads(result)
+        assert output["query"] == "python"
+        assert len(output["results"]) == 1
+        assert output["results"][0]["url"] == "https://python.org"
+
+    def test_post_method(self, httpx_mock, monkeypatch, python_search_response):
+        """Test SearXNG class directly with POST method"""
+        monkeypatch.setenv("SEARXNG_METHOD", "POST")
+
+        httpx_mock.add_response(
+            url="https://custom.searxng.com/search",
+            json=python_search_response,
+            method="POST",
+        )
+
+        searxng = SearXNG("https://custom.searxng.com")
+        result = searxng.search("python")
+
+        output = json.loads(result)
+        assert output["query"] == "python"
+        assert len(output["results"]) == 1
+        assert output["results"][0]["url"] == "https://python.org"

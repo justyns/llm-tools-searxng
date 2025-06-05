@@ -275,7 +275,7 @@ wheels = [
 
 [[package]]
 name = "llm-tools-searxng"
-version = "0.1"
+version = "0.1.1"
 source = { editable = "." }
 dependencies = [
     { name = "httpx" },

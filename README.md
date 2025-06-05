@@ -16,11 +16,19 @@ llm install llm-tools-searxng
 
 ## Configuration
 
-By default, the tool does not have a default SEARXNG_URL set, you must set this environment variable to a searxng instance you have access to:
+By default, the tool does not have a default SearXNG URL set. You can configure it in one of two ways:
+
+### Using environment variables
 
 ```bash
 export SEARXNG_URL=https://your-searxng-instance.com
 export SEARXNG_METHOD=GET  # or POST (default)
+```
+
+### Using LLM's built-in key management
+
+```bash
+llm key set searxng_url https://your-searxng-instance.com
 ```
 
 **Note:** Public SearXNG instances typically don't allow API access or JSON output.

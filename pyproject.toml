@@ -1,25 +1,20 @@
 [project]
 name = "llm-tools-searxng"
-version = "0.1"
+version = "0.1.1"
 description = "A tool to search the web using SearXNG."
 readme = "README.md"
-authors = [{name = "Justyn Shull"}]
+authors = [{ name = "Justyn Shull" }]
 license = "Apache-2.0"
 classifiers = []
 requires-python = ">=3.9"
-dependencies = [
-    "httpx>=0.28.1",
-    "llm>=0.26",
-]
+dependencies = ["httpx>=0.28.1", "llm>=0.26"]
 
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [dependency-groups]
-dev = [
-    "ruff>=0.11.12",
-]
+dev = ["ruff>=0.11.12"]
 test = ["pytest", "llm-echo>=0.3a1", "pytest-httpx"]
 
 [project.urls]

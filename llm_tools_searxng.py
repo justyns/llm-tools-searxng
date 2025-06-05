@@ -9,22 +9,33 @@ class SearXNG:
     """A tool for searching the web using SearXNG search engine"""
 
     def __init__(self, base_url: str = None):
-        self.base_url = base_url or os.getenv("SEARXNG_URL")
+        if base_url:
+            self.base_url = base_url
+        else:
+            self.base_url = llm.get_key(
+                explicit_key="searxng_url",
+                key_alias="searxng_url",
+                env_var="SEARXNG_URL"
+            )
+
         if not self.base_url:
-            raise ValueError("SEARXNG_URL environment variable is required")
+            raise ValueError("SearXNG URL is required. Set via SEARXNG_URL environment variable or use 'llm key set searxng_url <URL>'")
+
+        # Get method from environment variable, default to POST
         self.method = os.getenv("SEARXNG_METHOD", "POST").upper()
 
     def search(
         self,
         query: str,
         format: str = "json",
-        categories: str = None,
-        engines: str = None,
+        categories: str = "",
+        engines: str = "",
         language: str = "en",
         pageno: int = 1,
-        time_range: str = None,
+        time_range: str = "",
         safesearch: int = 1,
     ) -> str:
+
         """
         Search the web using SearXNG.
 
@@ -57,12 +68,14 @@ class SearXNG:
 
         try:
             # TODO: Set user agent?
-            headers = None
+            headers = {}
 
             with httpx.Client(follow_redirects=True, timeout=30.0, headers=headers) as client:
                 if self.method == "POST":
+                    # print("POST -> ", search_url, params)
                     response = client.post(search_url, data=params)
                 else:
+                    # print("GET -> ", search_url, params)
                     response = client.get(search_url, params=params)
                 response.raise_for_status()
 
@@ -112,6 +125,8 @@ def searxng_search(query: str) -> str:
 
 @llm.hookimpl
 def register_tools(register):
-    if not os.environ.get("SEARXNG_URL"):
-        raise RuntimeError("SEARXNG_URL environment variable is not set.")
-    register(searxng_search)
+    try:
+        SearXNG()
+        register(searxng_search)
+    except ValueError as e:
+        raise RuntimeError(str(e))
