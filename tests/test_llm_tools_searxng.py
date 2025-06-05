@@ -11,17 +11,19 @@ from llm_tools_searxng import SearXNG, searxng_search
 def mock_searxng_instance():
     """Mock SearXNG instance with predefined response"""
     instance = Mock()
-    instance.search.return_value = json.dumps({
-        "query": "test query",
-        "results": [
-            {
-                "title": "Test Result",
-                "url": "https://example.com",
-                "content": "This is a test result",
-                "engine": "duckduckgo",
-            }
-        ],
-    })
+    instance.search.return_value = json.dumps(
+        {
+            "query": "test query",
+            "results": [
+                {
+                    "title": "Test Result",
+                    "url": "https://example.com",
+                    "content": "This is a test result",
+                    "engine": "duckduckgo",
+                }
+            ],
+        }
+    )
     return instance
 
 

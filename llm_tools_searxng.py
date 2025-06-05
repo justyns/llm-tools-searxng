@@ -12,14 +12,12 @@ class SearXNG:
         if base_url:
             self.base_url = base_url
         else:
-            self.base_url = llm.get_key(
-                explicit_key="searxng_url",
-                key_alias="searxng_url",
-                env_var="SEARXNG_URL"
-            )
+            self.base_url = llm.get_key(explicit_key="searxng_url", key_alias="searxng_url", env_var="SEARXNG_URL")
 
         if not self.base_url:
-            raise ValueError("SearXNG URL is required. Set via SEARXNG_URL environment variable or use 'llm key set searxng_url <URL>'")
+            raise ValueError(
+                "SearXNG URL is required. Set via SEARXNG_URL environment variable or use 'llm key set searxng_url <URL>'"
+            )
 
         # Get method from environment variable, default to POST
         self.method = os.getenv("SEARXNG_METHOD", "POST").upper()
@@ -35,7 +33,6 @@ class SearXNG:
         time_range: str = "",
         safesearch: int = 1,
     ) -> str:
-
         """
         Search the web using SearXNG.
 
