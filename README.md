@@ -28,7 +28,7 @@ export SEARXNG_METHOD=GET  # or POST (default)
 ### Using LLM's built-in key management
 
 ```bash
-llm key set searxng_url https://your-searxng-instance.com
+llm keys set searxng_url --value https://your-searxng-instance.com
 ```
 
 **Note:** Public SearXNG instances typically don't allow API access or JSON output.
